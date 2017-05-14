@@ -32,14 +32,15 @@ def get_arch(s):
 def scan(host):
     """scan the host"""
     try:
-        s = socket.create_connection((host, 445), timeout=0.5)
+        print "Scanning %s" % host
+        s = socket.create_connection((host, 445), timeout=5)
         if s is None:
             # port is not open, ignore
             return
 
-        cs = smb.SMB('*SMBSERVER', host, sess_port=445, timeout=0.1)
+        cs = smb.SMB('*SMBSERVER', host, sess_port=445, timeout=5)
 
-        uid = cs.login_standard('', '')
+        uid = cs.login('', '')
         tid = cs.tree_connect_andx('\\\\IPC$', '')
         base_probe = (
             '\x00\x00\x00\x4a\xff\x53\x4d\x42\x25\x00\x00\x00\x00\x18\x01\x28'
@@ -134,7 +135,7 @@ http://www.catalog.update.microsoft.com/Search.aspx?q=KB4012598
         print 'start to scan network {} for {} hosts...'.format(str(network), len(hosts))
     else:
         print 'start to scan host {}'.format(input_network)
-        hosts.append(hosts)
+        hosts.append(input_network)
 
     pool = multiprocessing.Pool(processes=16)
     pool.map(scan, hosts)
