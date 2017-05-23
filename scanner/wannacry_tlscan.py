@@ -19,17 +19,16 @@ from ipaddr import IPv4Network
 class ExceptionHandler():
     ''' in some cases, the socket returns the status as exception '''
     def __init__(self, e, host):
-    	super(ExceptionHandler, self).__init__()
         self.e = e
         self.host = host
 
         if "STATUS_ACCESS_DENIED" in str(self.e):
             print('%s - system is not vulnerable' % self.host)
-        else if "STATUS_INVALID_HANDLE" in str(self.e):
+        elif "STATUS_INVALID_HANDLE" in str(self.e):
         	print('%s - system is not vulnerable' % self.host)
-        else if "time out" in str(self.e):
+        elif "time out" in str(self.e):
             print('%s - time out exception, the system is not listening' % self.host)
-  		else:
+        else:
             print('%s - can not detect vulnerable status' % self.host)
 
 
