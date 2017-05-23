@@ -16,6 +16,23 @@ import sys
 from impacket import smb
 from ipaddr import IPv4Network
 
+class ExceptionHandler():
+    ''' in some cases, the socket returns the status as exception '''
+    def __init__(self, e, host):
+    	super(ExceptionHandler, self).__init__()
+        self.e = e
+        self.host = host
+
+        if "STATUS_ACCESS_DENIED" in str(self.e):
+            print('%s - system is not vulnerable' % self.host)
+        else if "STATUS_INVALID_HANDLE" in str(self.e):
+        	print('%s - system is not vulnerable' % self.host)
+        else if "time out" in str(self.e):
+            print('%s - time out exception, the system is not listening' % self.host)
+  		else:
+            print('%s - can not detect vulnerable status' % self.host)
+
+
 timeout = 0.5
 def parse_options():
     """parse options"""
@@ -60,10 +77,11 @@ def get_arch(s):
 
 def scan(host):
     """scan the host"""
+
     try:
         s = socket.create_connection((host, 445), timeout=timeout)
         if s is None:
-            # port is not open, ignore
+            print('[!] Port seems to be close on host %s\n' % host)
             return
 
         cs = smb.SMB('*SMBSERVER', host, sess_port=445, timeout=timeout)
@@ -105,7 +123,7 @@ def scan(host):
             except:
                 pass
             if double_infection:
-                print('%s - system is vulnerable, DoublePulsa infection - Arch: %s Key:0x%x ' % \
+                print('%s - system is vulnerable, DoublePulsar infection - Arch: %s Key:0x%x ' % \
                       (host, get_arch(sig2),xor_key(sig1)))
             else:
                 print('%s - system is vulnerable' % host)
@@ -115,8 +133,9 @@ def scan(host):
             print('%s - system is not vulnerable' % host)
         else:
             print('%s - can not detect vulnerable status' % host)
-    except:
-        pass
+    except Exception, e:
+        # In case the socket returns with exception
+        ExceptionHandler(e, host)
 
 def main():
     """main function"""
