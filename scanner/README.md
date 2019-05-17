@@ -8,6 +8,11 @@ This tool need to python 2.7 to run, and install the related package with:
 ```
 pip install -r requirements.txt
 ```
+or run with docker:
+```
+docker build -t trustlookwannacrytoolkit/scanner .
+docker run --rm -it trustlookwannacrytoolkit/scanner -n 192.168.0.100/24
+```
 
 ## Usage
 
